@@ -255,7 +255,9 @@ for i = 1:times
     fprintf(visaObj,':WAVeform:POINts:MODE RAW');
     fprintf(visaObj,':WAVeform:SOURce CHANnel1');
     %fprintf(visaObj,':WAVeform:FORMat BYTE'); %page1620
-    fprintf(visaObj,':WAV:POINTS 5000');
+    fprintf(visaObj,':WAV:POIN:MODE MAX');
+    fprintf(visaObj,':WAV:POIN MAX');
+    fprintf(visaObj,':WAV:UNS 0');
     %fprintf(visaObj,':WAVeform:DATA?');
     %fprintf(visaObj,':WAVeform:DATA?');% Now tell the instrument to digitize channel1
 
@@ -266,9 +268,9 @@ for i = 1:times
     %    operationComplete = str2double(query(visaObj,'*OPC?'));
     %end
     % Get the data back as a WORD (i.e., INT16), other options are ASCII and BYTE
-    fprintf(visaObj,':WAVEFORM:FORMAT WORD');
+    fprintf(visaObj,':WAVeform:FORMAT WORD');
     % Set the byte order on the instrument as well
-    fprintf(visaObj,':WAVEFORM:BYTEORDER LSBFirst');
+    fprintf(visaObj,':WAVeform:BYTEORDER LSBFirst');
     % Get the preamble block
     preambleBlock = query(visaObj,':WAVEFORM:PREAMBLE?');
     % Now send commmand to read data
