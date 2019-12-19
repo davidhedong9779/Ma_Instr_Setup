@@ -138,19 +138,19 @@ disp('go')
 
 
 %% Setup signal generator
-devicereset(deviceObj);
-set(deviceObj.Burstmode(1), 'Enabled', 'on');
-set(deviceObj.Burstmode(1), 'Cycles', 1.0);
-set(deviceObj.Waveform(1), 'Shape', 'EMemory');
-set(deviceObj.Voltage(1), 'Amplitude', sig_voltage);
-set(deviceObj, 'TriggerSource', 'external');
-status=Write(s,'Output1:State On');
+% devicereset(deviceObj);
+% set(deviceObj.Burstmode(1), 'Enabled', 'on');
+% set(deviceObj.Burstmode(1), 'Cycles', 1.0);
+% set(deviceObj.Waveform(1), 'Shape', 'EMemory');
+% set(deviceObj.Voltage(1), 'Amplitude', sig_voltage);
+% set(deviceObj, 'TriggerSource', 'external');
+% status=Write(s,'Output1:State On');
 
 dt_signal=T_signal/N_signal; %s
 Fs_signal=1/dt_signal %Hz
 f_signalgenerator=1/T_signal %Hz
 
-set(deviceObj.Frequency(1), 'Frequency', f_signalgenerator);
+%set(deviceObj.Frequency(1), 'Frequency', f_signalgenerator);
 
 t1=[0:dt_signal:T_signal-dt_signal];
 t2=[0:dt_signal:1/fc*8];
@@ -164,7 +164,7 @@ figure;
 plot(t1,Data)
 %Data = gauspuls(t-t(end)/2,fc,bw);
 
-TransferWfm(s, 'example.wfm', Data, N_signal);
+%TransferWfm(s, 'example.wfm', Data, N_signal);
 
 
 %% Connect to Motion Controller

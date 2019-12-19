@@ -1,7 +1,7 @@
 %% For Func Gen and Osc Combine Testing Only
 clear all;
 close all;
-%% ALL: Major Settings
+%% ALL: Major Settings f = 10w
 %General
 dir = 'C:\Users\ASFM\Desktop\Test_Data';
 datafolder='data';
@@ -12,20 +12,25 @@ filenameroot='direction_grating_0406_empty_angle75-3';%facing the second door;
 %Major Oscilloscope Setings
 Osc_Ch1_range='8'; %Vpp - Channel 1 range
 Osc_Ch2_range='8'; %Vpp - Channel 2 range
-Osc_trigger_level='2'; %Vpp - Trigger Level
-Osc_T=1.0E-2; %s - total time
-Osc_pretriggerT=-.3E-2; %s - pre trigger time
-Osc_N_min=10E3; %mininum number of sampling points
 Ch1_invert='off'; %'on'=inverted, 'off'=normal
 Ch2_invert='on'; %'on'=inverted, 'off'=normal
 Osc_Ch1_scale = '500mV';
 Osc_Ch2_scale = '500mV';
+Horizontal_Range = '10E-5'; %Sec
+Horizontal_Delay = '4E-5'; %Sec
+Osc_trigger_level='2'; %Vpp - Trigger Level
+
+
+Osc_T=1.0E-2; %s - total time
+Osc_pretriggerT=-.3E-2; %s - pre trigger time
+Osc_N_min=10E3; %mininum number of sampling points
 
 %Major Function Generator Settings
 sig_voltage=2.0; %Vpp
 T_signal=0.8E-2; %s
-N_signal=10000; %points
-fc=4500; %Hz %%Input signal frequency
+N_signal=1000000; %points
+fc=1000; %Hz %%Input signal frequency
+FuncG_Buffer_Size = 5120000;
 %bw=.3; % for gaussian puls
 
 %Scanning Grid
@@ -43,7 +48,83 @@ times = total_distance / distance;
 total_step = distance * step_size;
                        %total amount of steps to move per time
 
+                       
+if fc == 1000000
+    Horizontal_Range = '10E-6'; %Sec
+    Horizontal_Delay = '4E-6'; %Sec
+    sig_voltage=2.0; %Vpp
+    N_signal=100000; %points
+    T_signal=0.8E-3; %s
+end
+                       
+if fc == 100000
+    Horizontal_Range = '10E-5'; %Sec
+    Horizontal_Delay = '4E-5'; %Sec
+    sig_voltage=2.0; %Vpp
+    N_signal=100000; %points
+end
 
+if fc == 10000
+    Horizontal_Range = '10E-4'; %Sec
+    Horizontal_Delay = '4E-4'; %Sec
+    sig_voltage=2.0; %Vpp
+    N_signal=100000; %points
+end
+
+if fc == 1000
+    Horizontal_Range = '10E-3'; %Sec
+    Horizontal_Delay = '4E-3'; %Sec
+    T_signal=0.8E-1; %s
+    sig_voltage=2.0; %Vpp
+    N_signal=10000; %points
+end
+% %% ALL: Major Settings f = 10w
+% 
+% %previous 56/150
+% %Major Oscilloscope Setings
+% Horizontal_Range = '10E-5'; %Sec
+% Horizontal_Delay = '4E-5'; %Sec
+% 
+% %Major Function Generator Settings
+% sig_voltage=2.0; %Vpp
+% N_signal=100000; %points
+% fc=100000; %Hz %%Input signal frequency
+% %% ALL: Major Settings f = 10000
+% 
+% %previous 56/150
+% %Major Oscilloscope Setings
+% Horizontal_Range = '10E-4'; %Sec
+% Horizontal_Delay = '4E-4'; %Sec
+% 
+% %Major Function Generator Settings
+% sig_voltage=2.0; %Vpp
+% N_signal=100000; %points
+% fc=10000; %Hz %%Input signal frequency
+% 
+% %% ALL: Major Settings f = 1000
+% 
+% %previous 56/150
+% %Major Oscilloscope Setings
+% Horizontal_Range = '10E-3'; %Sec
+% Horizontal_Delay = '4E-3'; %Sec
+% 
+% %Major Function Generator Settings
+% T_signal=0.8E-1; %s
+% sig_voltage=2.0; %Vpp
+% N_signal=10000; %points
+% fc=1000; %Hz %%Input signal frequency
+
+% %% ALL: Major Settings f = 10w
+% 
+% %previous 56/150
+% %Major Oscilloscope Setings
+% Horizontal_Range = '10E-5'; %Sec
+% Horizontal_Delay = '4E-5'; %Sec
+% 
+% %Major Function Generator Settings
+% sig_voltage=2.0; %Vpp
+% N_signal=100000; %points
+% fc=100000; %Hz %%Input signal frequency
 %% OSC: Connect
 
 % Find a VISA-USB object.
@@ -73,7 +154,7 @@ else
 end
 % Set buffersize before generate the waveform whlie afg connected but not open
 % Cannot set buffersize when afg is open
-VisaObjFunCG.OutputBufferSize = 5120000;
+VisaObjFunCG.OutputBufferSize = FuncG_Buffer_Size;
 % Open function generator
 fopen(VisaObjFunCG);
 
@@ -125,8 +206,8 @@ fprintf(visaObj,'*CLS');
 fprintf(visaObj,':TRIGger:SWEep NORMal');
 
 %Horizontal Control
-fprintf(visaObj,':TIMebase:RANGe 10E-3'); %in 100ms
-fprintf(visaObj,':TIMebase:DELay 0E-3'); %in sec
+fprintf(visaObj,[':TIMebase:RANGe ', Horizontal_Range]); %in 100ms 10E-3
+fprintf(visaObj,[':TIMebase:DELay ', Horizontal_Delay]); %in sec
 fprintf(visaObj,':TIMebase:REFerence CENTer');
 fprintf(visaObj,':TIMEBASE:MODE MAIN');
 % Channel 1
@@ -135,12 +216,12 @@ fprintf(visaObj,':CHANnel1:COUPling DC');
 fprintf(visaObj,':CHANnel1:IMPedance ONEMeg');
 fprintf(visaObj,':CHANnel1:OFFSet 0 V');
 fprintf(visaObj,':CHANnel1:PROBe X1');
-fprintf(visaObj,':CHANnel1:RANGe 8');
-fprintf(visaObj,':CHANnel1:INVert off');
-fprintf(visaObj,':CHANnel1:SCALe 500mV');
-%fprintf(visaObj,strcat(':CHANnel1:RANGe ', Osc_Ch1_range));
-%fprintf(visaObj,strcat(':CHANnel1:INVert ', Ch1_invert));
-%fprintf(visaObj,strcat(':CHANnel1:SCALe ', Osc_Ch1_scale));
+%fprintf(visaObj,':CHANnel1:RANGe 8');
+%fprintf(visaObj,':CHANnel1:INVert off');
+%fprintf(visaObj,':CHANnel1:SCALe 500mV');
+fprintf(visaObj,[':CHANnel1:RANGe ', Osc_Ch1_range]);
+fprintf(visaObj,[':CHANnel1:INVert ', Ch1_invert]);
+fprintf(visaObj,[':CHANnel1:SCALe ', Osc_Ch1_scale]);
 
 
 % Channel 2
@@ -152,16 +233,16 @@ fprintf(visaObj,':CHANnel2:PROBe X1');
 fprintf(visaObj,':CHANnel2:RANGe 8');
 fprintf(visaObj,':CHANnel2:INVert off');
 fprintf(visaObj,':CHANnel2:SCALe 500mV');
-%fprintf(visaObj,strcat(':CHANnel2:RANGe ', Osc_Ch1_range));
-%fprintf(visaObj,strcat(':CHANnel2:INVert ', Ch1_invert));
-%fprintf(visaObj,strcat(':CHANnel2:SCALe ', Osc_Ch2_scale));
+fprintf(visaObj,[':CHANnel2:RANGe ',Osc_Ch1_range]);
+fprintf(visaObj,[':CHANnel2:INVert ',Ch1_invert]);
+fprintf(visaObj,[':CHANnel2:SCALe ',Osc_Ch2_scale]);
 
 %Trigger
 fprintf(visaObj,':TRIGger:MODE EDGE');
 fprintf(visaObj,':TRIGger:EDGE:SOURce CHANNEL1');
 fprintf(visaObj,':TRIGger:EDGE:COUPling DC');
 %fprintf(visaObj,':TRIGger[:EDGE]:LEVel 2');
-fprintf(visaObj,strcat(':TRIGger[:EDGE]:LEVel ', Osc_trigger_level));
+fprintf(visaObj,[':TRIGger[:EDGE]:LEVel ',Osc_trigger_level]);
 
 %set acquisition properties
 fprintf(visaObj,':ACQuire:TYPE NORMal');
@@ -239,7 +320,7 @@ fprintf(VisaObjFunCG, 'SOURCE1:BURst:MODE TRIGgered');
 fprintf(VisaObjFunCG, 'TRIGger:SEQuence:SOURce EXTernal');
 fprintf(VisaObjFunCG, 'SOURCE1:BURSt:NCYCles 1.0');
 fprintf(VisaObjFunCG, 'SOURCE1:FUNCTION EMEM');
-fprintf(VisaObjFunCG, 'SOURCE1:FREQUENCY 125'); 
+fprintf(VisaObjFunCG, ['SOURCE1:FREQUENCY ',num2str(1/T_signal)]); 
 fprintf(VisaObjFunCG, 'SOURCE1:VOLTAGE:AMPLITUDE 2');
 fprintf(VisaObjFunCG, 'SOURCE1:VOLTAGE:OFFSET 0.00');
 fprintf(VisaObjFunCG, ':OUTP1 ON');
@@ -255,7 +336,7 @@ for i = 1:times
     fprintf(visaObj,':WAVeform:POINts:MODE RAW');
     fprintf(visaObj,':WAVeform:SOURce CHANnel1');
     %fprintf(visaObj,':WAVeform:FORMat BYTE'); %page1620
-    fprintf(visaObj,':WAV:POINTS 5000');
+    fprintf(visaObj,':WAV:POINTS 10000');
     %fprintf(visaObj,':WAVeform:DATA?');
     %fprintf(visaObj,':WAVeform:DATA?');% Now tell the instrument to digitize channel1
 

@@ -103,7 +103,7 @@ pause(0.1)
 fprintf(s1,'D=%d\n',D); %set decelaration
 pause(0.1);
 fprintf(s1,'VM=%d\n',max_v); % Set max velocity
-pause(0.1);
+pause(0.1);  
 
 %% OSC: Setup open and close visa object to turn on precision mode
 
@@ -249,6 +249,7 @@ fprintf(VisaObjFunCG, 'TRIGger:SEQuence:IMMediate');
 for i = 1:times
     
     fprintf(visaObj,':SINGle');
+    %pause(0.5)
     fprintf(VisaObjFunCG, 'TRIGger:SEQuence:IMMediate');
     pause(3);
     % OSC: Save
